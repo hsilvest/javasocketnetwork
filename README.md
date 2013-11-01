@@ -1,4 +1,4 @@
 javasocketnetwork
 =================
 
-network socket script using java
+network socket script with java
