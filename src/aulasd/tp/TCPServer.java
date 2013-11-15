@@ -14,7 +14,7 @@ public class TCPServer {
 		String clientSentence;
 		String capitalizedSentence;
 		// cria socket de comunicação com os clientes na porta 6789
-		ServerSocket welcomeSocket = new ServerSocket(6997);
+		ServerSocket welcomeSocket = new ServerSocket(6788);
 		// espera msg de algum cliente e trata
 		while (true) {
 			// espera conexão de algum cliente

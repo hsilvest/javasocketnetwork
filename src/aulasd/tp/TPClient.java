@@ -13,23 +13,32 @@ public class TPClient {
 	public static void main(String[] args) throws Exception {
 		String sentence;
 		String modifiedSentence;
-		// cria o stream do teclado
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		// cria o socket de acesso ao server hostname na porta 6789
-		Socket clientSocket = new Socket("127.0.0.1", 6997);
-		// cria os streams (encadeamentos) de entrada e saida com o servidor
-		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		// le uma linha do teclado e coloca em sentence
-		sentence = inFromUser.readLine();
-		// envia a linha para o server
-		outToServer.writeBytes(sentence + '\n');
-		// lê uma linha do server
-		modifiedSentence = inFromServer.readLine();
-		// apresenta a linha do server no vídeo
-		System.out.println("FROM SERVER " + modifiedSentence);
-		// fecha o cliente
-		clientSocket.close();
+		while (true) {
+			// cria o stream do teclado
+			BufferedReader inFromUser = new BufferedReader(
+					new InputStreamReader(System.in));
+			// cria o socket de acesso ao server hostname na porta 6789
+			Socket clientSocket = new Socket("127.0.0.1", 6788);
+			// cria os streams (encadeamentos) de entrada e saida com o servidor
+			DataOutputStream outToServer = new DataOutputStream(
+					clientSocket.getOutputStream());
+			BufferedReader inFromServer = new BufferedReader(
+					new InputStreamReader(clientSocket.getInputStream()));
+			// le uma linha do teclado e coloca em sentence
+			sentence = inFromUser.readLine();
+			// envia a linha para o server
+			outToServer.writeBytes(sentence + '\n');
+			// lê uma linha do server
+			modifiedSentence = inFromServer.readLine();
+			// apresenta a linha do server no vídeo
+			System.out.println("FROM SERVER " + modifiedSentence);
+			if (sentence.toUpperCase().equals("EXIT")) {
+				// fecha o cliente
+				clientSocket.close();
+				break;
+			}
+		}
+
 	}
 
 }
