@@ -5,8 +5,6 @@ import java.net.*;
 
 public class TPClient extends Thread {
 
-	private String sentence;
-	private String modifiedSentence;
 	private Socket conexao;
 
 	public TPClient(Socket clientSocket) {
@@ -15,20 +13,26 @@ public class TPClient extends Thread {
 
 	public static void main(String[] args) throws Exception {
 		try {
+			Socket clientSocket = new Socket("127.0.0.1", 6787);
+			
+			PrintStream outToServer = new PrintStream(
+					clientSocket.getOutputStream());
+			
+			BufferedReader inFromUser = new BufferedReader(
+					new InputStreamReader(System.in));
+			
+			System.out.print("Cliente: ");
+			String nome = inFromUser.readLine();
+			outToServer.println(nome);
+			
+			Thread thread = new TPClient(clientSocket);
+			thread.start();
+			String msg;
 			while (true) {
-				Socket clientSocket = new Socket("127.0.0.1", 6787);
-
-				DataOutputStream outToServer = new DataOutputStream(
-						clientSocket.getOutputStream());
-				BufferedReader inFromUser = new BufferedReader(
-						new InputStreamReader(System.in));
-				Thread thread = new TPClient(clientSocket);
-				thread.start();
-				String msg;
 				while (true) {
-					System.out.println("Mensagem: ");
+					System.out.print("Mensagem: ");
 					msg = inFromUser.readLine();
-					outToServer.writeBytes(msg);
+					outToServer.println(msg);
 				}
 			}
 		} catch (IOException ex) {
@@ -45,12 +49,13 @@ public class TPClient extends Thread {
 			String msg;
 			while (true) {
 				msg = inFromServer.readLine();
-				if(msg.toUpperCase().equals("EXIT")){
-					this.conexao.close();
+				if(msg == null){
+					System.out.println("Conexão encerrada!");
+					System.exit(0);
 				}
 				System.out.println();
 				System.out.println(msg);
-				System.out.println("Mensagem: ");
+				System.out.print("Mensagem: ");
 			}
 		} catch (IOException ex) {
 			System.out.println("Erro: " + ex);

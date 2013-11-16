@@ -1,23 +1,31 @@
 package aulasd.tp;
 
-import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Enumeration;
+import java.util.Vector;
+
+
 
 public class TCPServer extends Thread {
 
 	private Socket conexao;
-	private static ArrayList<DataOutputStream> clientes = new ArrayList<>();
+	private static Vector clientes;
+	private String nomeCliente;
 
 	public TCPServer(Socket socket) {
 		this.conexao = socket;
 	}
 
 	public static void main(String[] args) throws Exception {
+		clientes = new Vector<>();
 		try {
 			ServerSocket welcomeSocket = new ServerSocket(6787);
-			System.out.println("Servidor rodando na porta 6788");
+			System.out.println("Servidor rodando na porta 6787");
 			while (true) {
 				Socket connectionSocket = welcomeSocket.accept();
 				Thread thread = new TCPServer(connectionSocket);
@@ -33,14 +41,22 @@ public class TCPServer extends Thread {
 		try {
 			BufferedReader inFromClient = new BufferedReader(
 					new InputStreamReader(this.conexao.getInputStream()));
-			DataOutputStream outToClient = new DataOutputStream(
+
+			PrintStream outToClient = new PrintStream(
 					this.conexao.getOutputStream());
+
+			this.nomeCliente = inFromClient.readLine();
+			System.out.println(this.nomeCliente + " Conectou ao servidor");
+			
 			clientes.add(outToClient);
-			String mensagem = inFromClient.readLine();
-			while (!mensagem.toUpperCase().equals("exit")) {
-				broadCast(outToClient, "escreveu", mensagem);
-				mensagem = inFromClient.readLine();
+			
+			String msg = inFromClient.readLine();
+			while (!msg.toUpperCase().equals("EXIT")) {
+				broadCast(outToClient, " escreveu ", msg);
+				msg = inFromClient.readLine();
 			}
+			System.out.println(this.nomeCliente + " Desconectou do servidor");
+			broadCast(outToClient, " Desconectou ", "do servidor");
 			clientes.remove(outToClient);
 			this.conexao.close();
 		} catch (IOException ex) {
@@ -48,14 +64,15 @@ public class TCPServer extends Thread {
 		}
 	}
 
-	public void broadCast(DataOutputStream out, String action, String msg) throws IOException {
-		Enumeration elementos = (Enumeration) clientes;
+	public void broadCast(PrintStream out, String action, String msg)
+			throws IOException {
+		Enumeration elementos = (Enumeration) clientes.elements();
 		while (elementos.hasMoreElements()) {
-			DataOutputStream envia = (DataOutputStream) elementos.nextElement();
-			if(envia != out){
-				envia.writeBytes(msg);
+			PrintStream outToClient = (PrintStream) elementos.nextElement();
+			if (outToClient != out) {
+				outToClient.println(this.nomeCliente + action + msg);
 			}
-			
+
 		}
 	}
 
