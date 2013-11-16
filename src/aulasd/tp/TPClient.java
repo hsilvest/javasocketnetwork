@@ -10,6 +10,7 @@ public class TPClient extends Thread {
 	public TPClient(Socket clientSocket) {
 		this.conexao = clientSocket;
 	}
+	static long startTime;
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -33,6 +34,7 @@ public class TPClient extends Thread {
 					System.out.print("Mensagem: ");
 					msg = inFromUser.readLine();
 					outToServer.println(msg);
+					startTime = System.nanoTime();
 				}
 			}
 		} catch (IOException ex) {
@@ -49,12 +51,13 @@ public class TPClient extends Thread {
 			String msg;
 			while (true) {
 				msg = inFromServer.readLine();
+				long endTime = System.nanoTime();
 				if(msg == null){
-					System.out.println("Conexão encerrada!");
+					System.out.println("Conexao encerrada!");
 					System.exit(0);
 				}
 				System.out.println();
-				System.out.println(msg);
+				System.out.println(msg + " - Tempo de Processo: " + Math.round((endTime - startTime)/1e6) + " Nano segundos");
 				System.out.print("Mensagem: ");
 			}
 		} catch (IOException ex) {

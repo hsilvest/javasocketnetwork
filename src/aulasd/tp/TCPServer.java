@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -41,6 +42,7 @@ public class TCPServer extends Thread {
 		try {
 			BufferedReader inFromClient = new BufferedReader(
 					new InputStreamReader(this.conexao.getInputStream()));
+			
 
 			PrintStream outToClient = new PrintStream(
 					this.conexao.getOutputStream());
